@@ -70,6 +70,7 @@ class TodoList extends StatefulWidget {
 
 class _TodoListState extends State<TodoList> {
   List<String> todos = [];
+  TextEditingController _textFieldController = TextEditingController();
 
   @override
   void initState() {
@@ -112,9 +113,11 @@ class _TodoListState extends State<TodoList> {
       body: Column(
         children: [
           TextField(
+            controller: _textFieldController,
             onSubmitted: (value) {
               if (value.isNotEmpty) {
                 _addTodo(value);
+                _textFieldController.clear();
               }
             },
             decoration: InputDecoration(
@@ -123,8 +126,11 @@ class _TodoListState extends State<TodoList> {
               suffixIcon: IconButton(
                 icon: Icon(Icons.add),
                 onPressed: () {
-                  // Hier kannst du die Aktion beim Drücken des Hinzufügen-Icons hinzufügen
-                  // Zum Beispiel kannst du _addTodo mit dem aktuellen Text des Textfelds aufrufen.
+                  String newTodo = _textFieldController.text.trim();
+                  if (newTodo.isNotEmpty) {
+                    _addTodo(newTodo);
+                    _textFieldController.clear();
+                  }
                 },
               ),
             ),
