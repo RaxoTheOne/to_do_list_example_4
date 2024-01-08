@@ -5,6 +5,7 @@ void main() {
   runApp(MyApp());
 }
 
+
 class TodoListItem extends StatefulWidget {
   final String title;
   final ValueChanged<bool> onCheckboxChanged;
@@ -21,12 +22,10 @@ class _TodoListItemState extends State<TodoListItem> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Center(
-        child: Text(
-          widget.title,
-          style: TextStyle(
-            decoration: _isChecked ? TextDecoration.lineThrough : null,
-          ),
+      title: Text(
+        widget.title,
+        style: TextStyle(
+          decoration: _isChecked ? TextDecoration.lineThrough : null,
         ),
       ),
       trailing: Checkbox(
@@ -38,12 +37,6 @@ class _TodoListItemState extends State<TodoListItem> {
           });
         },
       ),
-      onTap: () {
-        setState(() {
-          _isChecked = !_isChecked;
-          widget.onCheckboxChanged(_isChecked);
-        });
-      },
     );
   }
 }
@@ -52,14 +45,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('To-Do List'),
-        ),
-        body: Center(
-          child: TodoList(),
-        ),
-      ),
+      home: TodoList(),
     );
   }
 }
@@ -90,21 +76,57 @@ class _TodoListState extends State<TodoList> {
     prefs.setStringList('todos', todos);
   }
 
+  _addTodo(String todo) {
+    setState(() {
+      todos.add(todo);
+      _saveTodos();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: todos.length,
-      itemBuilder: (context, index) {
-        return TodoListItem(
-          title: todos[index],
-          onCheckboxChanged: (bool value) {
-            setState(() {
-              todos[index] = value ? 'Task ${index + 1} erledigt' : 'Task ${index + 1}';
-              _saveTodos();
-            });
-          },
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('To-Do List'),
+      ),
+      body: Column(
+        children: [
+          TextField(
+            onSubmitted: (value) {
+              if (value.isNotEmpty) {
+                _addTodo(value);
+              }
+            },
+            decoration: InputDecoration(
+              hintText: 'Neues To-Do hinzufügen',
+              contentPadding: EdgeInsets.all(16.0),
+              suffixIcon: IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  // Hier kannst du die Aktion beim Drücken des Hinzufügen-Icons hinzufügen
+                  // Zum Beispiel kannst du _addTodo mit dem aktuellen Text des Textfelds aufrufen.
+                },
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: todos.length,
+              itemBuilder: (context, index) {
+                return TodoListItem(
+                  title: todos[index],
+                  onCheckboxChanged: (bool value) {
+                    setState(() {
+                      todos[index] = value ? 'Task ${index + 1} erledigt' : 'Task ${index + 1}';
+                      _saveTodos();
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
