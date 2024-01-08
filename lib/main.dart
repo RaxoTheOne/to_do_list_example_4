@@ -143,9 +143,7 @@ class _TodoListState extends State<TodoList> {
                   title: todos[index],
                   onCheckboxChanged: (bool value) {
                     setState(() {
-                      todos[index] = value
-                          ? 'Task ${index + 1} erledigt'
-                          : 'Task ${index + 1}';
+                      todos[index] = value ? 'Task ${index + 1} erledigt' : 'Task ${index + 1}';
                       _saveTodos();
                     });
                   },
