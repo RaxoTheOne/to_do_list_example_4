@@ -5,12 +5,16 @@ void main() {
   runApp(MyApp());
 }
 
-
 class TodoListItem extends StatefulWidget {
   final String title;
   final ValueChanged<bool> onCheckboxChanged;
+  final VoidCallback onDelete;
 
-  TodoListItem({required this.title, required this.onCheckboxChanged});
+  TodoListItem({
+    required this.title,
+    required this.onCheckboxChanged,
+    required this.onDelete,
+  });
 
   @override
   _TodoListItemState createState() => _TodoListItemState();
@@ -28,14 +32,23 @@ class _TodoListItemState extends State<TodoListItem> {
           decoration: _isChecked ? TextDecoration.lineThrough : null,
         ),
       ),
-      trailing: Checkbox(
-        value: _isChecked,
-        onChanged: (bool? value) {
-          setState(() {
-            _isChecked = value!;
-            widget.onCheckboxChanged(value);
-          });
-        },
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Checkbox(
+            value: _isChecked,
+            onChanged: (bool? value) {
+              setState(() {
+                _isChecked = value!;
+                widget.onCheckboxChanged(value);
+              });
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: widget.onDelete,
+          ),
+        ],
       ),
     );
   }
@@ -83,6 +96,13 @@ class _TodoListState extends State<TodoList> {
     });
   }
 
+  _deleteTodo(int index) {
+    setState(() {
+      todos.removeAt(index);
+      _saveTodos();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,6 +140,9 @@ class _TodoListState extends State<TodoList> {
                       todos[index] = value ? 'Task ${index + 1} erledigt' : 'Task ${index + 1}';
                       _saveTodos();
                     });
+                  },
+                  onDelete: () {
+                    _deleteTodo(index);
                   },
                 );
               },
